@@ -11,8 +11,11 @@ from VoteApp import views
 urlpatterns = [
     url(r'^$',views.index),
     url(r'^(\d+)', views.vote),
-    url(r'^share/(\d+)/$', views.share,name='shareGrade'),
-    url(r'^share/grade/(\d+)/(\d+)/$', views.grade),
+    # 显示主页面
+    url(r'^share/(\d+)/(\d+)$', views.share,name='shareGrade'),
+    # 打分
+    url(r'^share/grade/', views.grade),
+    # 留言
     url(r'^chat/', views.chat),
     url(r"^test/",views.test),
 ]

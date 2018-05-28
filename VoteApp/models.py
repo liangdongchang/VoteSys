@@ -40,12 +40,13 @@ class VoteType(models.Model):
 
 #候选者表
 class Candidate(models.Model):
-	'''名称、年龄，竞选宣言，选票数,候选者图片名称'''
+	'''名称、年龄，竞选宣言，选票数,候选者图片名称,第几次竞选'''
 	cName = models.CharField(max_length=20,unique=True)
 	cAge = models.IntegerField(default=0)
-	cDeclaration = models.CharField(max_length=300)
+	cDeclaration = models.CharField(max_length=300,default='')
 	cVotes = models.IntegerField(default=0)
-	cImgName = models.CharField(max_length=20,default=None)
+	cImgName = models.CharField(max_length=20,default='who.jpg')
+	cTimes = models.IntegerField(default=1)
 	isDelete = models.BooleanField(default=False)
 
 	# 外键 与投票类型表形成一对多关系，一个投票类型对应多个候选者
@@ -69,13 +70,17 @@ class Candidate(models.Model):
 
 # 用户投票记录表
 class UserVoteRecord(models.Model):
-	'''用户名称、投票时间，投票给谁，投票类型，备注(如果是分享打分系统，就是分数)'''
+	'''用户名称、投票时间，投票给谁，投票类型，备注(如果是分享打分系统，就是分数),给候选者第几次投票'''
 	uNameId = models.ForeignKey(User,on_delete=models.SET_NULL,blank=True,null=True)
 	uDate = models.DateField(auto_now=True)
 	uRemark = models.CharField(max_length=20,default=None)
 	uType = models.ForeignKey(VoteType, on_delete=models.SET_NULL, blank=True, null=True)
 	uWhoId = models.ForeignKey(Candidate,on_delete=models.SET_NULL,blank=True,null=True)
 	isDelete = models.BooleanField(default=False)
+	uTimes = models.IntegerField(default=1)
+	def getUSer(self):
+		return self.uNameId
+
 	class Meta:
 		db_table = 'userVoteRecord'
 

@@ -9,58 +9,90 @@
 
 </head>
 <body>
-    <div class="box" style="height: 300px;text-align: center;margin: 10px auto;">
-        <h1>分享-打分系统</h1>
-        <ul>
-            <li>
+
+    <h1 >分享-打分系统</h1>
+    <span id="mytime"></span>
+    <div class="grade" style="height: 250px;width:200px;text-align: center;margin: 10px auto;">
+        <ul style="list-style: none;">
+            <li style="list-style: none;float: left;">
                 <img src="/static/img/{{ cs.cImgName }}" title ="{{ cs.cDeclaration }}">
                 演讲大神：{{ cs.cName }} <br> &nbsp;
-                当前总分数：{% widthratio cs.cVotes 1 grads %}<br>
+                当前总分数：{% widthratio cs.cVotes 1 avg %}<br>
 
                 班级总人数：60 <br>
                 打分人数：{{ cs.cVotes }} <br>
 
-                平均分：{{ grads }}<br>
-                <button class="vote"  value="{{ cs.id }}"  name="{{ cs.cName }}" title ="{{ cs.cDeclaration }}">打分</button>
+                <strong>平均分：{{ avg }}<br></strong>
+                <button style="margin: 10px 10px 0" class="vote"  value="{{ cs.id }}"  name="{{ cs.cName }}" title ="{{ cs.cDeclaration }}">打分</button>
                 <button class="chat" value="{{ cs.id }}"  name="{{ cs.cName }}" title ="{{ cs.cDeclaration }}">留言</button>
 
             </li>
         </ul>
     </div>
+    <div style="float: left;margin: 0 0 0 200px">
+        <h2 style="height: 20px; ">打分区</h2>
+        <div id="chat" style="height: 250px; width: 300px;overflow: auto;border: 2px solid black;border-radius: 5px;">
+            <table class="table table-striped table-bordered table-hover table-condensed">
+                <thead>
+                    <tr class="danger">
+                        <th>时间</th>
+                        <th>打分者</th>
+                        <th>分数</th>
 
-    <h2 style="height: 40px; width: 500px;">留言区</h2>
-    <div id="chat" style="height: 250px; width: 700px;overflow: auto;border: 2px solid black;border-radius: 5px">
-
-        <table class="table table-striped table-bordered table-hover table-condensed">
-            <thead>
-                <tr class="danger">
-                    <th>留言时间</th>
-                    <th>留言者</th>
-                    <th>标题</th>
-                    <th>内容</th>
-                </tr>
-            </thead>
-            <tbody >
-                {% if messages %}
-                    {% for message in messages %}
-                        <tr class="{% cycle 'active' 'success' 'warning' 'info' %}">
-                            <td >{{ message.crTime|date:'Y-m-d H:i:s' }}</td>
-                            <td style=" padding: 0 20px;">{{ message.crName }}</td>
-                            <td style=" padding: 0 20px;">对{{  message.crTopic }}的评价</td>
-                            <td style=" padding: 0 20px;">{{ message.crInfo }}</td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="4">无数据</td>
                     </tr>
-                {% endif %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody >
+                    {% if grades %}
+                        {% for grade in grades %}
+                            <tr class="{% cycle 'active' 'success' 'warning' 'info' %}">
+                                <td >{{ grade.uDate|date:'Y-m-d ' }}</td>
+                                <td style=" padding: 0 20px;">{{ grade.getUSer.uName }}</td>
+                                <td style=" padding: 0 20px;">{{  grade.uRemark }}</td>
+
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4">无数据</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
 
     </div>
 
-
+    <div class="grade" style="margin:0 0 0 50px;float: left;">
+        <h2 style="height: 20px; width: 100px;">留言区</h2>
+        <div id="chat" style="height: 250px; width: 700px;overflow: auto;border: 2px solid black;border-radius: 5px;">
+            <table class="table table-striped table-bordered table-hover table-condensed">
+                <thead>
+                    <tr class="danger">
+                        <th>留言时间</th>
+                        <th>留言者</th>
+                        <th>标题</th>
+                        <th>内容</th>
+                    </tr>
+                </thead>
+                <tbody >
+                    {% if messages %}
+                        {% for message in messages %}
+                            <tr class="{% cycle 'active' 'success' 'warning' 'info' %}">
+                                <td >{{ message.crTime|date:'Y-m-d H:i:s' }}</td>
+                                <td style=" padding: 0 20px;">{{ message.crName }}</td>
+                                <td style=" padding: 0 20px;">对{{  message.crTopic }}的评价</td>
+                                <td style=" padding: 0 20px;">{{ message.crInfo }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4">无数据</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 
     <script>
@@ -79,8 +111,11 @@
                         alert("分数范围为0-100");
                     }
                     else {
+                        var url = '/vote/share/grade/';
                         $.ajax({
-                            url: '/vote/share/grade/'+whoId+ '/'+grades,
+                            type:"POST",
+                            url: url,
+                            data:{'whoId':whoId,'times':{{ times }},'grades':grades},
                             success: function (res) {
                                 if (res == 1) {
                                     alert("打分成功!");
@@ -108,24 +143,38 @@
                                 }
                             });
                         } else {
-{#                            alert("留言失败");#}
+                            alert("留言失败");
                         }
-
                 }
-
             });
-
+             //定时刷新,2秒后自动刷新页面
+{#            setTimeout("location.reload()",5000);#}
         });
 
         //验证字符串是否是数字
         function checkNumber(theObj) {
           var reg = /^[0-9]+.?[0-9]*$/;
-          if(reg.test(theObj)){
-              return true;
-          }else {
-              return false;
-          }
+          return reg.test(theObj);
         }
+        function showTime(){
+            nowtime=new Date();
+            year=nowtime.getFullYear();
+            month=nowtime.getMonth()+1;
+            date=nowtime.getDate();
+            document.getElementById("mytime").innerText=year+"年"+month+"月"+date+" "+nowtime.toLocaleTimeString();
+        }
+        function showTime(){
+            nowtime=new Date();
+            year=nowtime.getFullYear();
+            month=nowtime.getMonth()+1;
+            date=nowtime.getDate();
+            document.getElementById("mytime").innerText=year+"年"+month+"月"+date+" "+nowtime.toLocaleTimeString();
+
+        }
+        <!--定时刷新时间-->
+        setInterval("showTime()",1000);
+
+
 
     </script>
 </body>
