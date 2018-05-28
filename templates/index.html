@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>投票系统</title>
+    <link rel="stylesheet" href="{% static 'css/vote.css' %}">
+    <script src="{% static 'js/jquery-3.2.1.js' %}"></script>
+
+</head>
+<body>
+    <div class="box" style="height: 200px;">
+        <h1>骑士总冠军</h1>
+        <h1>编程语言排行榜-投票系统</h1>
+        <ul>
+            {% for name in cs %}
+                <li>
+                    <img src="/static/img/{{ name.cImgName }}" title ="{{ name.cDeclaration }}">
+                    {{ name.cName }} {{ name.cAge }}<br> &nbsp;
+                    当前票数：{{ name.cVotes }}<br>
+                    <button class="vote"  value="{{ name.id }}"  name="{{ name.cName }}" title ="{{ name.cDeclaration }}">投票</button>
+                    <button class="chat" value="{{ name.id }}"  name="{{ name.cName }}" title ="{{ name.cDeclaration }}">留言</button>
+
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <h2 style="height: 40px; width: 500px;">留言区</h2>
+    <div id="chat" style="height: 300px; width: 700px;overflow: auto;border: 2px solid black;border-radius: 5px">
+
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+                <tr class="danger">
+                    <th>留言时间</th>
+                    <th>留言者</th>
+                    <th>标题</th>
+                    <th>内容</th>
+                </tr>
+            </thead>
+            <tbody >
+                {% if messages %}
+                    {% for message in messages %}
+                        <tr class="{% cycle 'active' 'success' 'warning' 'info' %}">
+                            <td >{{ message.crTime|date:'Y-m-d H:i:s' }}</td>
+                            <td style=" padding: 0 20px;">{{ message.crName }}</td>
+                            <td style=" padding: 0 20px;">{{ message.crTopic }}</td>
+                            <td style=" padding: 0 20px;">{{ message.crInfo }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4">无数据</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+    </div>
+
+
+
+
+    <script>
+        jQuery(function ($) {
+            $("button").click(function () {
+
+                var val = $(this).attr("class");
+                var name = $(this).attr("name");
+                if(val == 'vote'){
+                    $.ajax({
+                        url: '/vote/' + this.value,
+                        success: function (res) {
+                            if (res == 1) {
+                                alert("投票成功!");
+                            } else {
+                                alert("您今天已经对" + name + " 投过票了，请明天再来!");
+                            }
+                             window.location.reload();
+                        }
+                    });
+
+                }else if(val == 'chat'){
+                    var flag = 0;
+                     var judge = prompt(name+"留言区");
+                        if (judge) {
+                            $.ajax({
+                                type:"POST",
+                                url:"/vote/chat/",
+                                data:{"cInfo":judge, "n":this.value},
+                                dataType:"json",
+                                success: function(res) {
+                                    if(parseInt(res) == 1){
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        } else {
+{#                            alert("留言失败");#}
+                        }
+
+                }
+
+            });
+
+        });
+
+    </script>
+</body>
+</html>

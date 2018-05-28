@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>测试</title>
+    <link rel="stylesheet" href="{% static 'css/vote.css' %}">
+        <link rel="stylesheet" href="{% static 'css/skin.css' %}">
+
+    <script src="{% static 'js/jquery-3.2.1.js' %}"></script>
+
+	<script src="{% static 'js/nui.js' %}">"></script>
+
+</head>
+<body>
+<div id="partBrandStd" class="nui-datagrid"
+						     onselectionchanged="onSelectionchanged" selectOnLoad="true"
+						     style="width: 100%; height: 89%; "dataField="partBrandList" pageSize="50" sizeList=[50,100,1000]
+		                     url="com.hs.runbe.basic.partstd.queryPartBrand.biz.ext" showSummaryRow="false" allowResize="true">
+					        <div property="columns">
+					        	<div type="indexcolumn">序号</div>
+					        	<div field="id"  width="" headerAlign="center" align="center" visible="false">品牌内码</div>
+					        	<div field="name"  name="name"  width="" headerAlign="center" align="center">
+					        	品牌名称
+					        	</div>
+
+								<div field="brandtype" type="comboboxcolumn" width="" headerAlign="center" align="center" allowSort="true">
+								品牌类型
+  	  			                              <input property="editor" class="nui-combobox"  	 data="brandType" />
+								</div>
+								<div field="code"   width="" headerAlign="center" align="center">
+								简码
+								</div>
+								<div field="manufacture"   width="" headerAlign="center" align="center">
+								品牌厂家
+								</div>
+								<div field="isdisabled" type="comboboxcolumn" width="" headerAlign="center" align="center" allowSort="true">
+								状态
+									<input property="editor" class="nui-combobox"  	 data= "isDisabled" />
+					        	</div>
+					        	<div field="auditstatus"  type="comboboxcolumn"  width="" headerAlign="center" align="center" data="AuditStatus">
+					        	审批状态
+					        	<input property="editor" class="nui-combobox"  	 data="auditStatus" />
+					        	</div>
+								<div field="auditor"  width="" headerAlign="center" align="center">审批人</div>
+								<div field="auditdate" dateFormat="yyyy-MM-dd"   width="" headerAlign="center" align="center">审批日期</div>
+								<div field="creator"   width="" headerAlign="center" align="center">建档人</div>
+								<div field="createdate" dateFormat="yyyy-MM-dd"   width="" headerAlign="center" align="center">建档日期</div>
+								<div field="operator"    width="" headerAlign="center" align="center">修改人</div>
+								<div field="operatedate" dateFormat="yyyy-MM-dd"   width="" headerAlign="center" align="center">修改日期</div>
+					        </div>
+					</div>
+</body>
+<script type="text/javascript">
+        var isDisabled = [{ id : 0, text : '启用' }, {id: 1, text : '禁用'}, {id: 2, text : '全部'}];
+        var brandType = [{ id : 0, text : '代理品牌' }, {id : 1, text :'自有品牌'}, {id: 2, text : '同质配套'}];
+        var auditStatus = [{ id : 0, text : '未审批' }, {id : 1, text : '通过'}, {id : 2, text : '不通过'}];
+    	nui.parse();
+    	  </script>
+</html>

@@ -1,0 +1,36 @@
+.box{
+    margin: 20px auto;
+    text-align: center;
+
+    display: block;
+}
+h1{
+    color: #376A95;
+    display: block;
+    background-color: #E2AF77;
+    border: 2px solid chartreuse;
+    border-radius: 15px;
+}
+img{
+    display: block;
+    height: 90px;
+    width: 90px;
+    text-align: center;
+
+}
+
+ul{
+    /*list-style: none;*/
+    text-align: center;
+}
+li{
+    display: block;
+    float: left;
+    padding: 10px 10px;
+    text-align: center;
+}
+
+button{
+    cursor:pointer;width: 50px;height: 30px;color: blue;font-size: 16px;
+}
+
