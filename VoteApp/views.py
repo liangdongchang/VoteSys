@@ -127,12 +127,13 @@ def chat(request):
 
 
 def test(request):
+	print("IP", getUserIP(request))
 	print("********************")
 	return render(request,'test.html')
 
 # 打分主页面
 def share(request,whoId,times):
-
+	test(request)
 	# 获取对应的人物
 	c = Candidate.cmanager.get(id=whoId)
 	# # 获取投票人数
@@ -157,7 +158,7 @@ def share(request,whoId,times):
 	# 统计分数
 	countGrades = 0
 	for u in us:
-		print(u.uRemark)
+		# print(u.uRemark)
 		if u.uRemark:
 			countGrades += int(u.uRemark)
 	avg = 0
@@ -170,6 +171,7 @@ def share(request,whoId,times):
 
 @csrf_exempt
 def grade(request):
+	# print("打分IP",getUserIP(request))
 	whoId = request.POST.get('whoId')
 	grades = request.POST.get('grades')
 	times = request.POST.get('times')
@@ -198,10 +200,10 @@ def grade(request):
 		return HttpResponse(1)
 	return HttpResponse(0)
 
-
+# 打分系统首页
 def shareNav(request):
-	# 获取对应的人物
-	cs = Candidate.cmanager.filter(cVoteType_id=2)
+	# 获取候选人物，按名字首字母排序
+	cs = Candidate.cmanager.filter(cVoteType_id=2).order_by("cPinyin")
 
 	dictData = {'cs': cs, 'messages': {}, 'avg': 0, 'votes': 0, 'whoSelect': 0, 'whoId': 0}
 	return render(request, 'shareNav.html', context=dictData)

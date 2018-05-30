@@ -19,7 +19,7 @@
                 演讲大神：{{ cs.cName }} <br> &nbsp;
                 当前总分数：{% widthratio cs.cVotes 1 avg %}<br>
 
-                班级总人数：60 <br>
+                班级总人数：52 <br>
                 打分人数：{{ cs.cVotes }} <br>
 
                 <strong>平均分：{{ avg }}<br></strong>
@@ -32,7 +32,7 @@
     <div style="margin: 0 auto;width: 1200px;">
         <div style="height: 280px;width:400px;text-align: center;float: left">
             <h2 style="height: 20px; width: 150px;">打分区</h2>
-            <div id="chat" style="height: 200px; overflow: auto;width: 300px;border: 2px solid black;border-radius: 5px;">
+            <div id="chat" style="height: 200px; overflow: auto;width: 350px;border: 2px solid black;border-radius: 5px;">
                 <table >
                     <thead>
                         <tr class="danger">
@@ -82,7 +82,7 @@
                         {% for message in messages %}
                             <tr class="{% cycle 'active' 'success' 'warning' 'info' %}">
                                 <td> {{ forloop.counter }} </td>
-                                <td >{{ message.crTime|date:'Y-m-d ' }}</td>
+                                <td >{{ message.crTime|date:'H:i:s' }}</td>
                                 <td style=" padding: 0 20px;">{{ message.crNickName }}{{ forloop.counter }}  </td>
                                 <td style=" padding: 0 20px;">评价</td>
                                 <td style=" padding: 0 20px;">{{ message.crInfo }}</td>

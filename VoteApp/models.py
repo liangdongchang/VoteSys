@@ -41,13 +41,14 @@ class VoteType(models.Model):
 
 #候选者表
 class Candidate(models.Model):
-	'''名称、年龄，竞选宣言，选票数,候选者图片名称,第几次竞选'''
+	'''名称、年龄，竞选宣言，选票数,候选者图片名称,第几次竞选,按名字拼音首字母排序'''
 	cName = models.CharField(max_length=20,unique=True)
 	cAge = models.IntegerField(default=0)
 	cDeclaration = models.CharField(max_length=300,default='我那么美，给高点分呗')
 	cVotes = models.IntegerField(default=0)
 	cImgName = models.CharField(max_length=20,default='who.jpg')
 	cTimes = models.IntegerField(default=1)
+	cPinyin = models.CharField(max_length=20,default='')
 	isDelete = models.BooleanField(default=False)
 
 	# 外键 与投票类型表形成一对多关系，一个投票类型对应多个候选者
@@ -100,6 +101,7 @@ class ChatRecord(models.Model):
 	crTime = models.DateTimeField(auto_now=True)
 	crInfo = models.CharField(max_length=200)
 	crTopic = models.CharField(max_length=20)
+
 	isDelete = models.BooleanField(default=False)
 
 	# 外键 与用户表是一对多、与候选者表是一对多、与投票类型是一对多的关系
