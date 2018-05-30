@@ -20,6 +20,6 @@ from VoteApp import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^vote/',include('VoteApp.urls')),
+    url(r'^vote/',include('VoteApp.urls',namespace='vote')),
 
 ]

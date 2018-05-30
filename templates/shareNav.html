@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<!--suppress JSDuplicatedDeclaration -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分享打分系统</title>
+    <link rel="stylesheet" href="{% static 'css/vote.css' %}">
+    <script src="{% static 'js/jquery-3.2.1.js' %}"></script>
+
+</head>
+<body>
+
+    <h1 >分享-打分系统</h1>
+    <span id="mytime"></span>
+    <div style="height: 280px;width:250px;text-align: center;margin: 100px auto;">
+        <table>
+            <tr>
+                <td style="width: 300px;">
+                     <strong>分享者：</strong>
+                </td>
+                <td>
+                    <select id="whoId" style="width: 80px;border: 2px solid red;" title="" >
+                         <option value="0" selected = "selected">请选择...</option>
+                        {% for c in cs %}
+                            <option value="{{ c.id }}">{{ c.cName }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+{#            <tr>#}
+{#                <td>#}
+{#                    <strong>分享轮数：</strong>#}
+{#                </td>#}
+{#                <td>#}
+{#                    <input id="em" type="number" name="em" step="1" min="1" />#}
+{#                </td>#}
+{#            </tr>#}
+        </table>
+        <br>
+
+         <button style="width: 80px;">去打分</button>
+    </div>
+
+    <script>
+        jQuery(function ($) {
+
+
+            $("button").click(function () {
+                 var whoId = $('#whoId').val();
+                 var times = 1;
+{#                 var times = $("#em").val();#}
+
+                if(whoId != 0){
+                   window.location.href = "/vote/share/"+ whoId+"/"+times;
+                }else {
+                    alert("请选择一位分享者!!");
+                }
+
+            });
+        });
+        function showTime(){
+            nowtime=new Date();
+            year=nowtime.getFullYear();
+            month=nowtime.getMonth()+1;
+            date=nowtime.getDate();
+            document.getElementById("mytime").innerText=year+"年"+month+"月"+date+" "+nowtime.toLocaleTimeString();
+        }
+
+        <!--定时刷新时间-->
+        setInterval("showTime()",1000);
+
+    </script>
+</body>
+</html>

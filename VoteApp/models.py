@@ -12,8 +12,9 @@ class CandidateManager(Manager):
 
 # 用户表
 class User(models.Model):
-	'''用户表：用户名、密码、电脑IP'''
+	'''用户表：用户名、昵称、密码、电脑IP'''
 	uName = models.CharField(max_length=20,unique=True)
+	uNickName = models.CharField(max_length=20,default='guest')
 	uPass = models.CharField(max_length=20,default=None,null=True)
 	uIP = models.CharField(max_length=20)
 	isDelete = models.BooleanField(default=False)
@@ -43,7 +44,7 @@ class Candidate(models.Model):
 	'''名称、年龄，竞选宣言，选票数,候选者图片名称,第几次竞选'''
 	cName = models.CharField(max_length=20,unique=True)
 	cAge = models.IntegerField(default=0)
-	cDeclaration = models.CharField(max_length=300,default='')
+	cDeclaration = models.CharField(max_length=300,default='我那么美，给高点分呗')
 	cVotes = models.IntegerField(default=0)
 	cImgName = models.CharField(max_length=20,default='who.jpg')
 	cTimes = models.IntegerField(default=1)
@@ -78,6 +79,7 @@ class UserVoteRecord(models.Model):
 	uWhoId = models.ForeignKey(Candidate,on_delete=models.SET_NULL,blank=True,null=True)
 	isDelete = models.BooleanField(default=False)
 	uTimes = models.IntegerField(default=1)
+
 	def getUSer(self):
 		return self.uNameId
 
@@ -93,6 +95,7 @@ class UserVoteRecord(models.Model):
 class ChatRecord(models.Model):
 	'''发送者、时间、内容、话题(候选者)，投票类型'''
 	crName = models.CharField(max_length=20)
+	crNickName = models.CharField(max_length=20,default='guest')
 	# 设置时间字段为自动获取当前时间
 	crTime = models.DateTimeField(auto_now=True)
 	crInfo = models.CharField(max_length=200)
@@ -103,6 +106,8 @@ class ChatRecord(models.Model):
 	crUser = models.ForeignKey(User,on_delete=models.SET_NULL,blank=True,null=True)
 	crCandidate = models.ForeignKey(Candidate,on_delete=models.SET_NULL,blank=True,null=True)
 	crType = models.ForeignKey(VoteType,on_delete=models.SET_NULL,blank=True,null=True)
+
+
 
 	class Meta:
 		db_table = 'chatRecord'

@@ -1,4 +1,6 @@
 import datetime
+
+from django.db.models import Q
 from django.http import HttpResponse
 
 from django.shortcuts import render
@@ -18,13 +20,15 @@ def addUser(hostname,ip):
 
 
 # 检查用户是否已经投票
-def check(user,n,typeId,uRemark,times):
+def check(user,n,typeId,uRemark,times=1):
 	# 当前用户当天对某候选者只能投一票
 	# uvr = UserVoteRecord.objects.filter(isDelete=0,uNameId=user[0].id,uWhoId=n,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
 
 	# uvr = UserVoteRecord.objects.filter(isDelete=0,uWhoId=n,uType=typeId,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
-	uvr = UserVoteRecord.objects.filter(isDelete=0,uNameId=user[0].id,uTimes=int(times),uWhoId=n,uType=typeId,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
-	print(uvr)
+	uvr = UserVoteRecord.objects.filter(isDelete=0,uNameId=user[0].id,uTimes=times,uWhoId=n,uType=typeId,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
+	# print('******测试*****')
+	# print(uvr)
+	# print('******测试*****')
 	if uvr.exists():
 		return 0
 	else:
@@ -43,7 +47,7 @@ def addVoteRecord(ip,n,typeId,uRemark="",times=1):
 	uvr.uNameId = us
 	uvr.uWhoId = cs
 	uvr.uType = ut
-	uvr.uTimes =int(times)
+	uvr.uTimes =times
 	uvr.uRemark = uRemark
 	uvr.save()
 
@@ -90,7 +94,7 @@ def testing(request,n):
 def vote(request,n):
 	# 用户是否投票成功
 	cn = Candidate.cmanager.get(id=n, isDelete=0)
-	typeId = cn.c
+	typeId = cn.cVoteType_id
 	if  getUser(request,n,typeId):
 		cn.cVotes += 1
 		cn.save()
@@ -113,6 +117,7 @@ def chat(request):
 
 	cr.crInfo = cInfo  #留言内容
 	cr.crName = user.uName  #用户名称
+	cr.crNickName = user.uNickName  # 用户呢称
 	cr.crTopic = candidate.cName #候选者名称
 	cr.crType = candidate.cVoteType  #投票类型
 	cr.crUser = user   #用户
@@ -125,7 +130,7 @@ def test(request):
 	print("********************")
 	return render(request,'test.html')
 
-
+# 打分主页面
 def share(request,whoId,times):
 
 	# 获取对应的人物
@@ -134,12 +139,21 @@ def share(request,whoId,times):
 	# ct = c.chatrecord_set.all().count()
 	# 获取留言
 
-	crs = c.chatrecord_set.all()
+	# 获取今天的留言
+	now = datetime.datetime.now()
+	start = now - datetime.timedelta(hours=23, minutes=59, seconds=59)
+	crs = c.chatrecord_set.filter(crTime__gt=start)
+	# crs = c.chatrecord_set.all()
 	# 获取投票记录
-	us = UserVoteRecord.objects.filter(uWhoId=whoId, uTimes=times,isDelete=0)
+	us = UserVoteRecord.objects.filter(uWhoId=whoId, uTimes=times,isDelete=0,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
+	# us = UserVoteRecord.objects.filter(isDelete=0,uNameId=user[0].id,uTimes=times,uWhoId=n,uType=typeId,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
+
 	# us = UserVoteRecord.objects.all()
 	# 统计投票人数
-	c.cVotes = us.count()
+	if us:
+		c.cVotes = us.count()
+	else:
+		c.cVotes = 0
 	# 统计分数
 	countGrades = 0
 	for u in us:
@@ -162,6 +176,7 @@ def grade(request):
 	# 用户是否打分成功
 	cn = Candidate.cmanager.get(id=whoId, isDelete=0)
 	typeId = cn.cVoteType_id
+
 	if getUser(request, whoId,typeId,uRemark=str(grades),times=times):
 		# 打分人数
 		cn.cVotes += 1
@@ -177,24 +192,16 @@ def grade(request):
 		# 求平均分
 		avg = int(countGrades / cn.cVotes)
 
-		dictData = {'cs': cn, 'messages': crs,'grads':avg}
 
+		# dictData = {'cs': cn, 'messages': crs, 'avg': avg, 'grades': us, 'times': times}
 		# return render(request, 'shareGrade.html', context=dictData)
 		return HttpResponse(1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		return render(request, 'index.html', context=dictData)
 	return HttpResponse(0)
+
+
+def shareNav(request):
+	# 获取对应的人物
+	cs = Candidate.cmanager.filter(cVoteType_id=2)
+
+	dictData = {'cs': cs, 'messages': {}, 'avg': 0, 'votes': 0, 'whoSelect': 0, 'whoId': 0}
+	return render(request, 'shareNav.html', context=dictData)
