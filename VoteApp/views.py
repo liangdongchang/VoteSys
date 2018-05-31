@@ -103,6 +103,7 @@ def vote(request,n):
 
 # django对post增加了csrf的保护，所以需要加上@csrf_exempt装饰器
 #get请求则不需要
+# 处理留言请求
 @csrf_exempt
 def chat(request):
 	cInfo = request.POST.get('cInfo')
@@ -125,11 +126,14 @@ def chat(request):
 	cr.save()
 	return HttpResponse(1)
 
-
+# 测试页面处理
 def test(request):
 	print("IP", getUserIP(request))
 	print("********************")
-	return render(request,'test.html')
+	dataDicr = {
+		'content': '<h1>hello world</h1>'
+	}
+	return render(request,'test.html',context=dataDicr)
 
 # 打分主页面
 def share(request,whoId,times):
@@ -165,16 +169,18 @@ def share(request,whoId,times):
 	if c.cVotes:
 		avg = int(countGrades / c.cVotes)
 
-	testing(request, avg)
+	# testing(request, avg)
 	dictData = {'cs': c, 'messages': crs,'avg':avg,'grades':us,'times':times}
 	return render(request,'shareGrade.html',context=dictData)
 
+# 处理打分请求
 @csrf_exempt
 def grade(request):
 	# print("打分IP",getUserIP(request))
 	whoId = request.POST.get('whoId')
 	grades = request.POST.get('grades')
 	times = request.POST.get('times')
+	print('***********',times)
 	# 用户是否打分成功
 	cn = Candidate.cmanager.get(id=whoId, isDelete=0)
 	typeId = cn.cVoteType_id
@@ -183,17 +189,17 @@ def grade(request):
 		# 打分人数
 		cn.cVotes += 1
 		cn.save()
-		crs = ChatRecord.objects.all()
-		# 记录总分
-		us = UserVoteRecord.objects.filter(uWhoId=whoId, uTimes=times,isDelete=0)
-		countGrades = 0
-		for u in us:
-			if u.uRemark:
-				countGrades += int(u.uRemark)
-
-		# 求平均分
-		avg = int(countGrades / cn.cVotes)
-
+		# crs = ChatRecord.objects.all()
+		# # 记录总分
+		# us = UserVoteRecord.objects.filter(uWhoId=whoId, uTimes=times,isDelete=0)
+		# countGrades = 0
+		# for u in us:
+		# 	if u.uRemark:
+		# 		countGrades += int(u.uRemark)
+		#
+		# # 求平均分
+		# avg = int(countGrades / cn.cVotes)
+		#
 
 		# dictData = {'cs': cn, 'messages': crs, 'avg': avg, 'grades': us, 'times': times}
 		# return render(request, 'shareGrade.html', context=dictData)

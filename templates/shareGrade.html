@@ -12,19 +12,20 @@
 
     <h1 >分享-打分系统</h1>
     <span id="mytime"></span>
-    <div style="height: 280px;width:250px;text-align: center;margin: 10px auto;">
+    <div style="height: 280px;width:350px;text-align: center;margin: 10px auto;">
         <ul style="list-style: none;">
             <li style="list-style: none;float: left;">
-                <img src="/static/img/{{ cs.cImgName }}" title ="{{ cs.cDeclaration }}">
+                <img style="margin: 0 50px;" src="/static/img/{{ cs.cImgName }}" title ="{{ cs.cDeclaration }}">
                 演讲大神：{{ cs.cName }} <br> &nbsp;
                 当前总分数：{% widthratio cs.cVotes 1 avg %}<br>
 
-                班级总人数：52 <br>
+                班级总人数：60 <br>
                 打分人数：{{ cs.cVotes }} <br>
 
                 <strong>平均分：{{ avg }}<br></strong>
                 <button style="margin: 10px 10px 0" class="vote"  value="{{ cs.id }}"  name="{{ cs.cName }}" title ="{{ cs.cDeclaration }}">打分</button>
                 <button class="chat" value="{{ cs.id }}"  name="{{ cs.cName }}" title ="{{ cs.cDeclaration }}">留言</button>
+                <button style="margin: 10px 10px 0" class="reload"  title ="{{ cs.cDeclaration }}">刷新</button>
 
             </li>
         </ul>
@@ -104,7 +105,7 @@
 
                 var val = $(this).attr("class");
                 var name = $(this).attr("name");
-
+                <!--打分-->
                 if(val == 'vote'){
 
                     var judge1 = prompt("请给"+name+"打分(0-100分)");
@@ -147,6 +148,10 @@
                         } else {
                             alert("留言失败");
                         }
+                }else if(val == 'reload'){
+                    window.location.reload();
+                }else{
+
                 }
             });
              //定时刷新,2秒后自动刷新页面

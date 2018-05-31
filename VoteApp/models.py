@@ -6,7 +6,7 @@ from django.db.models import Manager
 
 
 class CandidateManager(Manager):
-	# 查询所有时默认不包含被逻辑删除的记录
+	# 查询所有记录时默认不包含被逻辑删除的记录
 	def get_queryset(self):
 		return super().get_queryset().exclude(isDelete=True)#.order_by('-cVotes')
 
@@ -23,8 +23,6 @@ class User(models.Model):
 		# 自定义表名
 		db_table = 'userTable'
 
-
-
 # 投票类型表
 class VoteType(models.Model):
 	'''投票种类、种类简介'''
@@ -37,7 +35,6 @@ class VoteType(models.Model):
 
 	def __str__(self):
 		return self.pType
-
 
 #候选者表
 class Candidate(models.Model):
@@ -63,12 +60,6 @@ class Candidate(models.Model):
 	class Meta:
 		db_table = 'candidate'
 		ordering= ['-cVotes']
-		# 自定义输出
-	def __str__(self):
-		return self.cName
-
-	# 外键 与用户形成多对多关系，一个用户可以投多个候选者，一个候选者可以被多个用户投
-
 
 # 用户投票记录表
 class UserVoteRecord(models.Model):
@@ -109,11 +100,6 @@ class ChatRecord(models.Model):
 	crCandidate = models.ForeignKey(Candidate,on_delete=models.SET_NULL,blank=True,null=True)
 	crType = models.ForeignKey(VoteType,on_delete=models.SET_NULL,blank=True,null=True)
 
-
-
 	class Meta:
 		db_table = 'chatRecord'
 
-	# 自定义输出
-	def __str__(self):
-		return  str(self.crTime) + self.crName + ':'+ self.crInfo
