@@ -1,6 +1,5 @@
 import datetime
 
-from django.db.models import Q
 from django.http import HttpResponse
 
 from django.shortcuts import render
@@ -18,13 +17,9 @@ def addUser(hostname,ip):
 	us.uComName = hostname
 	us.save()
 
-
 # 检查用户是否已经投票
 def check(user,n,typeId,uRemark,times=1):
 	# 当前用户当天对某候选者只能投一票
-	# uvr = UserVoteRecord.objects.filter(isDelete=0,uNameId=user[0].id,uWhoId=n,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
-
-	# uvr = UserVoteRecord.objects.filter(isDelete=0,uWhoId=n,uType=typeId,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
 	uvr = UserVoteRecord.objects.filter(isDelete=0,uNameId=user[0].id,uTimes=times,uWhoId=n,uType=typeId,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
 	# print('******测试*****')
 	# print(uvr)
@@ -34,8 +29,7 @@ def check(user,n,typeId,uRemark,times=1):
 	else:
 		addVoteRecord(user[0].uIP, n,typeId,uRemark,times)
 		return 1
-	# addVoteRecord(user[0].uIP, n)
-	# return 1
+
 
 # 增加投票记录
 def addVoteRecord(ip,n,typeId,uRemark="",times=1):
@@ -51,7 +45,6 @@ def addVoteRecord(ip,n,typeId,uRemark="",times=1):
 	uvr.uRemark = uRemark
 	uvr.save()
 
-
 # 获取用户Ip
 def getUserIP(request):
 	# 获取客户端IP
@@ -60,14 +53,13 @@ def getUserIP(request):
 	else:
 		return request.META['REMOTE_ADDR']
 
-
+# 检测用户是否存在表中
 def getUser(request,n,typeId,uRemark='',times=1):
 	# 获取用户IP
 	ip = getUserIP(request)
 	#从数据库中查询当前用户是否存在，当前IP作为查询条件
 	us = User.objects.filter(uIP=ip,isDelete=0)
 	# 当前用户存在
-
 	if us.exists():
 		# 检查当前用户是否对该候选者投了票
 		return check(us,n,typeId,uRemark,times)
@@ -78,28 +70,6 @@ def getUser(request,n,typeId,uRemark='',times=1):
 	return 1
 
 
-# 首页
-def index(request):
-
-	cs = Candidate.cmanager.filter(cVoteType_id=1)
-	crs = ChatRecord.objects.all()
-
-	dictData = {'cs':cs,'messages':crs,}
-	return render(request,'index.html',context=dictData)
-
-def testing(request,n):
-	print("**********",n)
-
-# 投票
-def vote(request,n):
-	# 用户是否投票成功
-	cn = Candidate.cmanager.get(id=n, isDelete=0)
-	typeId = cn.cVoteType_id
-	if  getUser(request,n,typeId):
-		cn.cVotes += 1
-		cn.save()
-		return HttpResponse(1)
-	return HttpResponse(0)
 
 # django对post增加了csrf的保护，所以需要加上@csrf_exempt装饰器
 #get请求则不需要
@@ -138,28 +108,23 @@ def test(request):
 # 打分主页面
 def share(request,whoId,times):
 	test(request)
-	# 获取对应的人物
+	# 获取候选者
 	c = Candidate.cmanager.get(id=whoId)
-	# # 获取投票人数
-	# ct = c.chatrecord_set.all().count()
-	# 获取留言
 
 	# 获取今天的留言
 	now = datetime.datetime.now()
 	start = now - datetime.timedelta(hours=23, minutes=59, seconds=59)
 	crs = c.chatrecord_set.filter(crTime__gt=start)
-	# crs = c.chatrecord_set.all()
+
 	# 获取投票记录
 	us = UserVoteRecord.objects.filter(uWhoId=whoId, uTimes=times,isDelete=0,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
-	# us = UserVoteRecord.objects.filter(isDelete=0,uNameId=user[0].id,uTimes=times,uWhoId=n,uType=typeId,uDate=datetime.datetime.now().__format__('%Y-%m-%d'))
 
-	# us = UserVoteRecord.objects.all()
 	# 统计投票人数
 	if us:
 		c.cVotes = us.count()
 	else:
 		c.cVotes = 0
-	# 统计分数
+	# 统计总分数
 	countGrades = 0
 	for u in us:
 		# print(u.uRemark)
@@ -180,29 +145,15 @@ def grade(request):
 	whoId = request.POST.get('whoId')
 	grades = request.POST.get('grades')
 	times = request.POST.get('times')
-	print('***********',times)
+	# print('***********',times)
 	# 用户是否打分成功
 	cn = Candidate.cmanager.get(id=whoId, isDelete=0)
 	typeId = cn.cVoteType_id
 
 	if getUser(request, whoId,typeId,uRemark=str(grades),times=times):
-		# 打分人数
+		# 增加打分人数
 		cn.cVotes += 1
 		cn.save()
-		# crs = ChatRecord.objects.all()
-		# # 记录总分
-		# us = UserVoteRecord.objects.filter(uWhoId=whoId, uTimes=times,isDelete=0)
-		# countGrades = 0
-		# for u in us:
-		# 	if u.uRemark:
-		# 		countGrades += int(u.uRemark)
-		#
-		# # 求平均分
-		# avg = int(countGrades / cn.cVotes)
-		#
-
-		# dictData = {'cs': cn, 'messages': crs, 'avg': avg, 'grades': us, 'times': times}
-		# return render(request, 'shareGrade.html', context=dictData)
 		return HttpResponse(1)
 	return HttpResponse(0)
 
