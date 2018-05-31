@@ -24,7 +24,7 @@ SECRET_KEY = 'ytff*lo%x6aaa85^%ajd4it0*13&#^n8dse$=nes=en)32u&y+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+# 允许外网访问
 ALLOWED_HOSTS = ['*']
 
 
@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    # 注册子应用
     'VoteApp',
 ]
 
@@ -81,17 +81,15 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
-'default': {
+    # 使用MySQL数据库
+    'default': {
         # 数据库引擎
         'ENGINE': 'django.db.backends.mysql',
-
         # 数据库名称
         'NAME': 'voteSys',
-
         # 账号和密码
         'USER': 'root',
         'PASSWORD': '123456',
-
         # IP和端口
         'HOST': 'localhost',
         'PORT': '3306'

@@ -69,8 +69,6 @@ def getUser(request,n,typeId,uRemark='',times=1):
 	addVoteRecord(ip, n,typeId,uRemark,times)
 	return 1
 
-
-
 # django对post增加了csrf的保护，所以需要加上@csrf_exempt装饰器
 #get请求则不需要
 # 处理留言请求
