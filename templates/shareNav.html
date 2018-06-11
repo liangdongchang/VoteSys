@@ -20,12 +20,21 @@
                      <strong>分享者：</strong>
                 </td>
                 <td>
-                    <select id="whoId" style="width: 80px;border: 2px solid red;" title="" >
-                         <option value="0" selected = "selected">请选择...</option>
+                    <input list="browsers" id="whoId" style="width: 90px;border: 2px solid red;padding: 2px;" placeholder="请选择..." >
+                    <datalist id="browsers">
                         {% for c in cs %}
-                            <option value="{{ c.id }}">{{ c.cName }}</option>
+                            <option value="{{ c.cName }}" data-value="{{ c.cName }}"  data-id="{{ c.id }}">{{ c.id }}</option>
                         {% endfor %}
-                    </select>
+
+                    </datalist>
+
+
+{#                    <select id="whoId" style="width: 80px;border: 2px solid red;" title="" >#}
+{#                         <option value="0" selected = "selected">请选择...</option>#}
+{#                        {% for c in cs %}#}
+{#                            <option value="{{ c.id }}">{{ c.cName }}</option>#}
+{#                        {% endfor %}#}
+{#                    </select>#}
                 </td>
             </tr>
 {#            <tr>#}
@@ -47,10 +56,22 @@
 
 
             $("button").click(function () {
-                 var whoId = $('#whoId').val();
+{#                 var whoId = $('#whoId').val();#}
+                 var input_select=$("#whoId").val();
+                 var option = $('option');
+                  var option_length=option.length;
+                    var option_id='';
+                    for(var i=0;i<option_length;i++){
+                        var option_value=option.eq(i).attr('data-value');
+                        if(input_select==option_value){
+                            option_id=$("option").eq(i).attr('data-id');
+                            break;
+                        }
+                    }
+{#                 alert(option_id);#}
                  var times = 1;
 {#                 var times = $("#em").val();#}
-
+                var whoId = option_id;
                 if(whoId != 0){
                    window.location.href = "/vote/share/"+ whoId+"/"+times;
                 }else {
